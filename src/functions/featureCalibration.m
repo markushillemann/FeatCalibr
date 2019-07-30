@@ -59,7 +59,7 @@ while iScale <= param.numScales
     catch err
         if strcmp(err.identifier, 'MATLAB:badsubscript')
             percent = percent - 0.05;
-            fprintf('The number of observations was too big. Try again with %2.0d%% of the points.\n', uint8(100*percent));
+            fprintf('The number of observations was too large. Try again with %2.0d%% of the points.\n', uint8(100*percent));
             numObservations = percent*numPointsCurrent;
             continue;
         else
@@ -71,9 +71,9 @@ while iScale <= param.numScales
     TCalibOptim = PositionRodrigues2HomMatrix(x);
     ptCloudOptim = rawData2PointCloud(scanPointsKart, Poses, TCalibOptim, TMobile2World);
     
-    % Half gridStep in each iteration
+    % adjust gridStep
     param.gridStep = param.gridStep/param.scaleFactor;
-    % reset percent to get as much points as possible in each cycle
+    % reset percent
     percent = 0.5;
     
     % Update numPointsCurrent

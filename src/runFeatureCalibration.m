@@ -41,16 +41,11 @@ addpath('./functions');
 %% load data
 % Required:
 % Poses: 4x4xN Matrix. N homogeneous pose matrices of the form:
-% [R(3x3), t(3x1);
-%  0,  0,  0,  1 ]
-% scanPointsKart: Mx4xN Matrix. M homogeneous laserscanner points per pose
+%        [R(3x3), t(3x1);
+%         0,  0,  0,  1 ]
+% scanPoints: Mx4xN Matrix. M homogeneous laserscanner points per pose
 
 % Optional:
-% TScanner2Odom: 4x4 Matrix. The result of a reference calibration which
-% uses artificial targets. This matrix is not used for calibration. It can
-% be used for a rough verification of the results, but the results of the
-% self-calbibration should be better.
-
 % TMobile2World: 4x4 Matrix. Rigid transformation from odometry frame to
 % world frame. Rotates the point cloud such that the walls are parallel
 % to the axes of the world frame. This matrix is not used for calibration,
@@ -103,20 +98,20 @@ optimOptions = optimset('TolFun', 1e-6, ...
                         'UseParallel',true);
 
 %% Compute initial point cloud
-mobileCloudRaw = rawData2PointCloud(scanPointsKart, Poses, TCalibIni, TMobile2World);
+ptCloudIni = rawData2PointCloud(scanPoints, Poses, TCalibIni, TMobile2World);
 
 %% Show the initial point cloud
 
 % Downsample for visualization
-ptCloudOptimDown = pcdownsample(mobileCloudRaw, 'gridAverage', 0.05);
+ptCloudIniDown = pcdownsample(ptCloudIni, 'gridAverage', 0.05);
 
 % Compute feature for visualization
+ftOptimCalib = computeOmnivariance(ptCloudIniDown.Location, parameters.numNeighbours);
 % ftOptimCalib = computeFeature(ptCloudOptimDown.Location, parameters.featureName, parameters.numNeighbours);
-ftOptimCalib = computeFeature(ptCloudOptimDown.Location, parameters.numNeighbours);
 
 % show the initial cloud
 subplot(2,1,1);
-pcshow(ptCloudOptimDown.Location, lin2rgbLinear(ftOptimCalib));
+pcshow(ptCloudIniDown.Location, lin2rgbLinear(ftOptimCalib));
 % set(gcf, 'position', [-1834         578        1387         571]);
 % xlim([-4.6  3.8]);
 % ylim([-6.94065338594674  3.04789199457736]);
@@ -139,7 +134,7 @@ drawnow;
 %% ------- Call the calibration function -------------
 [TCalib, ptCloudOptim, ptCloudIni] = featureCalibration(...
     TCalibIni, ...
-    scanPointsKart, ...
+    scanPoints, ...
     Poses, ...
     TMobile2World, ...
     parameters, ...
@@ -163,7 +158,7 @@ disp(['t in m: ', num2str(TCalib(1:3,4)')]);
 ptCloudOptimDown = pcdownsample(ptCloudOptim, 'gridAverage', 0.05);
 
 % Compute feature values for visualization
-ftOptimCalib = computeFeature(ptCloudOptimDown.Location, parameters.numNeighbours);
+ftOptimCalib = computeOmnivariance(ptCloudOptimDown.Location, parameters.numNeighbours);
 % ftOptimCalib = computeFeature(ptCloudOptimDown.Location, parameters.featureName, parameters.numNeighbours);
 
 % Show point cloud
