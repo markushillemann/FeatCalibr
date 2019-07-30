@@ -76,6 +76,9 @@ TCalibIni = [eul2rotm(rotation), translation;
 % Must be one of the following character arrays: linearity, planarity,
 % sphericity, omnivariance, eigenentropy, changeOfCurvature
 % omnivariance achieved best results in our experiments, eigenentropy second best.
+% to be able to adjust the feature one needs to comment line 47 in
+% functions/evaluateObjectiveFunction.m and uncomment line 48 in
+% functions/evaluateObjectiveFunction.m.
 
 parameters.gridStep = 0.3; % Size of the voxel grid filter. Finer is more precise, but less robust.
 
@@ -93,7 +96,6 @@ parameters.huberK = 0.2; % tuning constant of huberK estimator. Adjustig this pa
 % For omnivariance and eigenentropy this parameter should be between 0 and 1/3, for all other features between 0 and 1.
 
 % optimization parameters
-% if license('test', 'image_toolbox')
 optimOptions = optimset('TolFun', 1e-6, ...
                         'Display', 'Iter', ...
                         'TolX', 1e-6, ...
