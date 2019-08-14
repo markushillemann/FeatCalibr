@@ -2,13 +2,13 @@
 % self-calibration function
 %
 % TODO:
-% More details can be found in the following submission:
-%     M. Hillemann, M. Weinmann, M. S. Müller, B. Jutzi:
-%     Automatic Extrinsic Self-Calibration of Laserscanners Based on
-%     Geometric 3D Features
+% Details can be found in the following submission:
+%     M. Hillemann, M. Weinmann, M. S. Mueller, B. Jutzi:
+%     Automatic Extrinsic Self-Calibration of Mobile Mapping Systems
+%     Based on Geometric 3D Features
 %
 % LICENSE
-%   Copyright (C) 2018  Markus Hillemann
+%   Copyright (C) 2019  Markus Hillemann
 %
 %   This program is free software; you can redistribute it and/or
 %   modify it under the terms of the GNU General Public License
@@ -28,10 +28,6 @@
 %   Institute of Photogrammetry and Remote Sensing,
 %   Karlsruhe Institute of Technology (KIT)
 %   email:   markus.hillemann@kit.edu
-%
-% DATE
-%   30.08.2018
-
 
 format longG;
 
