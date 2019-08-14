@@ -3,10 +3,6 @@ FeatCalibr is a Matlab-Toolbox for automatic extrinsic self-calibration based on
 
 ![](calibrationExample.png )
 
-## Usage
-
-Run the script 'runFeatCalibr.m' to see an example.
-
 ## References
 Details to the calibration approach can be found in the following paper:
 
@@ -22,3 +18,6 @@ The current version of FeatCalibr requires the following MATLAB toolboxes:
 * Computer Vision Toolbox (for downsampling and displaying point clouds)
 * Robotics System Toolbox (just for converting between rotation parametrizations. This dependency will be removed in the next version of FeatCalibr.)
 * Parallel Computing Toolbox (to accelerate the computations. This dependency will be optional in the next version of FeatCalibr.)
+
+## Usage
+Run the script 'runFeatCalibr.m' to see an example.
