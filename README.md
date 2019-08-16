@@ -16,8 +16,10 @@ The current version of FeatCalibr requires the following MATLAB toolboxes:
 * Optimization Toolbox
 * Statistics and Machine Learning Toolbox
 * Computer Vision Toolbox (for downsampling and displaying point clouds)
-* Robotics System Toolbox (just for converting between rotation parametrizations. This dependency will be removed in the next version of FeatCalibr.)
-* Parallel Computing Toolbox (to accelerate the computations. This dependency will be optional in the next version of FeatCalibr.)
+
+Optional:
+
+* Parallel Computing Toolbox (to accelerate the computations.)
 
 ## Usage
 Run the script 'runFeatCalibr.m' to see an example.

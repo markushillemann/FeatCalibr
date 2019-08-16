@@ -40,7 +40,7 @@ PtCloudDown = pcdownsample(ptCloud, 'gridAverage', param.gridStep);
 
 % At least three points are needed to determine a 3-D transformation
 if ptCloud.Count < 50
-    error('At least fifty unique points are needed to determine the geometrix attributes.');
+    error('At least fifty unique points are needed to determine the geometric 3D features.');
 end
 
 %% Compute attributes of the current cloud

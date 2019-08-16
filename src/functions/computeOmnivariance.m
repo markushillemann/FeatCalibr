@@ -45,6 +45,7 @@ function feature = computeOmnivariance(XYZ,numNeighbours)
 % DATE
 %   30.08.2018
 
+global useParallel;
 
 % get point IDs
 numPoints = size(XYZ,1);
@@ -57,22 +58,41 @@ numLocalPoints = numNeighbours+1;
 feature = zeros(numPoints,1);
 
 % loop over all 3D points
-parfor iPoint=1:numPoints
-    
-    % select neighboring points
-    P = XYZ(neighbourIndices(iPoint,:),:);
+if useParallel
+    parfor iPoint=1:numPoints
 
-    % calculate covariance matrix C
-    P = P-ones(numLocalPoints,1)*(sum(P,1)/numLocalPoints);
-    C = P'*P./numNeighbours;
-       
-    % instead of calculating the eigenvalues we can use the determinant of
-    % the covariance matrix to determine the omnivariance (this is much
-    % faster)
-    C = C ./ (C(1,1)+C(2,2)+C(3,3));    
-    feature(iPoint) = det(C);
-        
-end  % iPoint
+        % select neighboring points
+        P = XYZ(neighbourIndices(iPoint,:),:);
+
+        % calculate covariance matrix C
+        P = P-ones(numLocalPoints,1)*(sum(P,1)/numLocalPoints);
+        C = P'*P./numNeighbours;
+
+        % instead of calculating the eigenvalues we can use the determinant of
+        % the covariance matrix to determine the omnivariance (this is much
+        % faster)
+        C = C ./ (C(1,1)+C(2,2)+C(3,3));    
+        feature(iPoint) = det(C);
+
+    end  % iPoint
+else % no Parallel Computing Toolbox
+    for iPoint=1:numPoints
+
+        % select neighboring points
+        P = XYZ(neighbourIndices(iPoint,:),:);
+
+        % calculate covariance matrix C
+        P = P-ones(numLocalPoints,1)*(sum(P,1)/numLocalPoints);
+        C = P'*P./numNeighbours;
+
+        % instead of calculating the eigenvalues we can use the determinant of
+        % the covariance matrix to determine the omnivariance (this is much
+        % faster)
+        C = C ./ (C(1,1)+C(2,2)+C(3,3));    
+        feature(iPoint) = det(C);
+
+    end  % iPoint
+end
 
 % feature: omnivariance
 feature = feature.^(1/3);

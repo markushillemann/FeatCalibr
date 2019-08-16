@@ -34,6 +34,22 @@ format longG;
 addpath('../data');
 addpath('./functions');
 
+%% Check for toolboxes
+if ~license('checkout', 'Video_and_Image_Blockset')
+    error('Computer Vision System Toolbox is required.')
+elseif ~license('checkout', 'Optimization_Toolbox')
+    error('Optimization Toolbox is required.')
+elseif ~license('checkout', 'Statistics_Toolbox')
+    error('Statistics and Machine Learning Toolbox is required.')
+end
+
+% Optional
+global useParallel;
+useParallel = true;
+if ~license('checkout', 'Distrib_Computing_Toolbox')
+    useParallel = false;
+end
+
 %% load data
 % Required:
 % Poses: 4x4xN Matrix. N homogeneous pose matrices of the form:
@@ -55,12 +71,16 @@ end
 
 %% set calibration parameters
 
+% adjust this!
+
 % rough guess of initial calibration parameters
 translation = [0,0,0]';
-rotation = deg2rad([0, -60, 0]); % euler angles. See eul2rotm for more information.
+rotation = deg2rad([0, -60, 0]); % axis-angle representation
 
-TCalibIni = [eul2rotm(rotation), translation;
+TCalibIni = [Rodrigues2(rotation), translation;
     0,    0,    0,             1     ];
+
+%% Set parameters
 
 % parameter for research purposes
 % parameters.featureName = 'omnivariance'; % Name of the feature to use.
@@ -90,8 +110,13 @@ parameters.huberK = 0.2; % tuning constant of huberK estimator. Adjustig this pa
 optimOptions = optimset('TolFun', 1e-6, ...
                         'Display', 'Iter', ...
                         'TolX', 1e-6, ...
-                        'MaxIter', 5, ...
-                        'UseParallel',true);
+                        'MaxIter', 5);
+
+if useParallel
+    optimOptions.UseParallel = true;
+else
+    optimOptions.UseParallel = false;
+end
 
 %% Compute initial point cloud
 ptCloudIni = rawData2PointCloud(scanPoints, Poses, TCalibIni, TMobile2World);
@@ -108,22 +133,9 @@ ftOptimCalib = computeOmnivariance(ptCloudIniDown.Location, parameters.numNeighb
 % show the initial cloud
 subplot(2,1,1);
 pcshow(ptCloudIniDown.Location, lin2rgbLinear(ftOptimCalib));
-% set(gcf, 'position', [-1834         578        1387         571]);
-% xlim([-4.6  3.8]);
-% ylim([-6.94065338594674  3.04789199457736]);
-% zlim([-1.01419358202727  2.44679715619865]);
 title('Initial point cloud');
 axis off
 view(0,0)
-
-% ax1 = gca;
-% outerpos = ax1.OuterPosition;
-% ti = ax1.TightInset;
-% left = outerpos(1) + ti(1);
-% bottom = outerpos(2) + ti(2);
-% ax_width = outerpos(3) - ti(1) - ti(3);
-% ax_height = outerpos(4) - ti(2) - ti(4);
-% ax1.Position = [left bottom ax_width ax_height];
 
 drawnow;
 
@@ -141,12 +153,12 @@ disp(' ');
 disp(' ----------  Result  ---------');
 disp(' ');
 disp('Initial calibration: ');
-disp(['r in deg: ', num2str(rad2deg(rotm2eul(TCalibIni(1:3,1:3))))]);
+disp(['r (axis-angle) in deg: ', num2str(rad2deg(Rodrigues2(TCalibIni(1:3,1:3))')), ' (axis-angle parametrization)']);
 disp(['t in m: ', num2str(TCalibIni(1:3,4)')]);
 
 disp(' ');
 disp('Optimized calibration: ');
-disp(['r in deg: ', num2str(rad2deg(rotm2eul(TCalib(1:3,1:3))))]);
+disp(['r in deg: ', num2str(rad2deg(Rodrigues2(TCalib(1:3,1:3))')), ' (axis-angle parametrization)']);
 disp(['t in m: ', num2str(TCalib(1:3,4)')]);
 
 %% Show final cloud colored by the chosen feature value
@@ -160,25 +172,9 @@ ftOptimCalib = computeOmnivariance(ptCloudOptimDown.Location, parameters.numNeig
 % Show point cloud
 subplot(2,1,2);
 pcshow(ptCloudOptimDown.Location, lin2rgbLinear(ftOptimCalib));
-
-% xlim([-4.6        3.8]);
-% ylim([-6.94065338594674          3.04789199457736]);
-% zlim([-1.01419358202727          2.44679715619865]);
-% set(gcf, 'position', [-1834         578        1387         571]);
 title('Point cloud after calibration');
 axis off
 view(0,0)
-
-% ax2 = gca;
-% outerpos = ax2.OuterPosition;
-% ti = ax2.TightInset;
-% left = outerpos(1) + ti(1);
-% bottom = outerpos(2) + ti(2);
-% ax_width = outerpos(3) - ti(1) - ti(3);
-% ax_height = outerpos(4) - ti(2) - ti(4);
-% ax2.Position = [left bottom ax_width ax_height];
-
-% linkaxes([ax1, ax2]);
 
 drawnow;
 
