@@ -10,6 +10,10 @@ Markus Hillemann, Martin Weinmann, Markus S. Mueller, Boris Jutzi. Automatic Ext
 
 Please cite the paper when using FeatCalibr or parts of it in an academic publication.
 
+For details on how the poses should be in order to achieve accurate results, have a look at the following paper:
+
+Markus Hillemann, Jochen Meidow, Boris Jutzi. Impact of Different Trajectories on Extrinsic Self-Calibration for Vehicle-Based Mobile Laser Scanning Systems. The International Archives of Photogrammetry, Remote Sensing and Spatial Information Sciences, XLII-2/W16, 119–125, 2019
+
 ## Dependencies
 The current version of FeatCalibr requires the following MATLAB toolboxes:
 
