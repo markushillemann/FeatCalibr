@@ -6,13 +6,17 @@ FeatCalibr is a Matlab-Toolbox for automatic extrinsic self-calibration based on
 ## References
 Details to the calibration approach can be found in the following paper:
 
-Markus Hillemann, Martin Weinmann, Markus S. Mueller, Boris Jutzi. Automatic Extrinsic Self-Calibration of Mobile Mapping Systems Based on Geometric 3D Features. Remote Sensing, 11(16):1955, 2019.
+    Markus Hillemann, Martin Weinmann, Markus S. Mueller, Boris Jutzi.
+    Automatic Extrinsic Self-Calibration of Mobile Mapping Systems Based on Geometric 3D Features.
+    Remote Sensing, 11(16):1955, 2019.
 
 Please cite the paper when using FeatCalibr or parts of it in an academic publication.
 
 For details on how the poses should be in order to achieve accurate results, have a look at the following paper:
 
-Markus Hillemann, Jochen Meidow, Boris Jutzi. Impact of Different Trajectories on Extrinsic Self-Calibration for Vehicle-Based Mobile Laser Scanning Systems. The International Archives of Photogrammetry, Remote Sensing and Spatial Information Sciences, XLII-2/W16, 119–125, 2019
+    Markus Hillemann, Jochen Meidow, Boris Jutzi.
+    Impact of Different Trajectories on Extrinsic Self-Calibration for Vehicle-Based Mobile Laser Scanning Systems.
+    The International Archives of Photogrammetry, Remote Sensing and Spatial Information Sciences, XLII-2/W16, 119–125, 2019
 
 ## Dependencies
 The current version of FeatCalibr requires the following MATLAB toolboxes:
