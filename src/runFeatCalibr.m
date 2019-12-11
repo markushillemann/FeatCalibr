@@ -69,17 +69,6 @@ if ~exist('TMobile2World', 'var')
     TMobile2World = eye(4);
 end
 
-%% set calibration parameters
-
-% adjust this!
-
-% rough guess of initial calibration parameters
-translation = [0,0,0]';
-rotation = deg2rad([0, -60, 0]); % axis-angle representation
-
-TCalibIni = [Rodrigues2(rotation), translation;
-    0,    0,    0,             1     ];
-
 %% Set parameters
 
 % parameter for research purposes
@@ -106,6 +95,9 @@ parameters.useHuber = 1; % boolean. 1: robust cost function is used (m-estimator
 parameters.huberK = 0.2; % tuning constant of huberK estimator. Adjustig this parameter only has impact if useHuber is set to 1. Depends on the feature:
 % For omnivariance and eigenentropy this parameter should be between 0 and 1/3, for all other features between 0 and 1.
 
+parameters.optimizeJustRotation = 0; % boolean. 0: All extrinsic calibration parameters are optimized. 1: Just the rotation parameters (bore-sight) are optimized.
+% Set this parameter to 1 if the translation parameters (leverarm) are negligible or if you already know the exact parameters
+
 % optimization parameters
 optimOptions = optimset('TolFun', 1e-6, ...
                         'Display', 'Iter', ...
@@ -117,6 +109,26 @@ if useParallel
 else
     optimOptions.UseParallel = false;
 end
+
+%% set initial calibration parameters
+
+% adjust this!
+
+% rough guess of initial translation parameters
+if parameters.optimizeJustRotation 
+    % we already know the exact translation parameters (leverarm)
+    translation = [0.14251    0.067203    0.086904]';
+else
+    % we only have a rough guess of the translation (leverarm)
+    translation = [0,0,0]';
+end
+
+% rough guess of initial rotation parameters
+rotation = deg2rad([0, -60, 0]); % axis-angle representation
+
+% homogeneous transformation matrix of calibration parameters
+TCalibIni = [Rodrigues2(rotation), translation;
+    0,    0,    0,             1     ];
 
 %% Compute initial point cloud
 ptCloudIni = rawData2PointCloud(scanPoints, Poses, TCalibIni, TMobile2World);
@@ -153,7 +165,7 @@ disp(' ');
 disp(' ----------  Result  ---------');
 disp(' ');
 disp('Initial calibration: ');
-disp(['r (axis-angle) in deg: ', num2str(rad2deg(Rodrigues2(TCalibIni(1:3,1:3))')), ' (axis-angle parametrization)']);
+disp(['r in deg: ', num2str(rad2deg(Rodrigues2(TCalibIni(1:3,1:3))')), ' (axis-angle parametrization)']);
 disp(['t in m: ', num2str(TCalibIni(1:3,4)')]);
 
 disp(' ');

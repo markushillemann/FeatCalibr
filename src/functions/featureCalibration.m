@@ -28,10 +28,16 @@ function [TCalibOptim,ptCloudOptim,ptCloudIni,Err,c_xx] = featureCalibration(TCa
 %   30.08.2018
 
 
-% Unknowns: 6 calibration parameters
-x = zeros(6,1);
-x(1:3) = Rodrigues2(TCalibIni(1:3,1:3));
-x(4:6) = TCalibIni(1:3,4);
+if param.optimizeJustRotation
+    x = zeros(3,1);
+    x(1:3) = Rodrigues2(TCalibIni(1:3,1:3));
+else
+    % Unknowns: 6 calibration parameters
+    x = zeros(6,1);
+    x(1:3) = Rodrigues2(TCalibIni(1:3,1:3));
+    x(4:6) = TCalibIni(1:3,4);
+end
+
 numUnknowns = size(x,1);
 
 %% extrinsic self-calibration
@@ -52,23 +58,33 @@ numObservations = percent*numPointsCurrent;
 iScale = 1;
 while iScale <= param.numScales
     
-    try
-        % Optimization
-        [x,~,objFunc,~,~,~,jacobian] = lsqnonlin(@evaluateObjectiveFunction,x,[],[],optimOptions, ...
-            scanPointsKart, Poses, TMobile2World, numObservations, param);
-    catch err
-        if strcmp(err.identifier, 'MATLAB:badsubscript')
-            percent = percent - 0.05;
-            fprintf('The number of observations was too large. Try again with %2.0d%% of the points.\n', uint8(100*percent));
-            numObservations = percent*numPointsCurrent;
-            continue;
+%     try
+        if param.optimizeJustRotation
+            % Optimize just the rotation parameters
+            [x,~,objFunc,~,~,~,jacobian] = lsqnonlin(@evaluateObjectiveFunctionJustRotation,x,[],[],optimOptions, ...
+                scanPointsKart, Poses, TMobile2World, numObservations, param, TCalibIni);
         else
-            error(err.message);
+            % Optimize all extrinsic calibration parameters
+            [x,~,objFunc,~,~,~,jacobian] = lsqnonlin(@evaluateObjectiveFunction,x,[],[],optimOptions, ...
+                scanPointsKart, Poses, TMobile2World, numObservations, param);
         end
-    end
+%     catch err
+%         if strcmp(err.identifier, 'MATLAB:badsubscript')
+%             percent = percent - 0.05;
+%             fprintf('The number of observations was too large. Try again with %2.0d%% of the points.\n', uint8(100*percent));
+%             numObservations = percent*numPointsCurrent;
+%             continue;
+%         else
+%             error(err.message);
+%         end
+%     end
     
     % Optimized Calibration
-    TCalibOptim = PositionRodrigues2HomMatrix(x);
+    if param.optimizeJustRotation
+        TCalibOptim = PositionRodrigues2HomMatrix([x; TCalibIni(1:3,4)]);
+    else
+        TCalibOptim = PositionRodrigues2HomMatrix(x);
+    end
     ptCloudOptim = rawData2PointCloud(scanPointsKart, Poses, TCalibOptim, TMobile2World);
     
     % adjust gridStep
