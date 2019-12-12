@@ -58,7 +58,7 @@ numObservations = percent*numPointsCurrent;
 iScale = 1;
 while iScale <= param.numScales
     
-%     try
+    try
         if param.optimizeJustRotation
             % Optimize just the rotation parameters
             [x,~,objFunc,~,~,~,jacobian] = lsqnonlin(@evaluateObjectiveFunctionJustRotation,x,[],[],optimOptions, ...
@@ -68,16 +68,16 @@ while iScale <= param.numScales
             [x,~,objFunc,~,~,~,jacobian] = lsqnonlin(@evaluateObjectiveFunction,x,[],[],optimOptions, ...
                 scanPointsKart, Poses, TMobile2World, numObservations, param);
         end
-%     catch err
-%         if strcmp(err.identifier, 'MATLAB:badsubscript')
-%             percent = percent - 0.05;
-%             fprintf('The number of observations was too large. Try again with %2.0d%% of the points.\n', uint8(100*percent));
-%             numObservations = percent*numPointsCurrent;
-%             continue;
-%         else
-%             error(err.message);
-%         end
-%     end
+    catch err
+        if strcmp(err.identifier, 'MATLAB:badsubscript')
+            percent = percent - 0.05;
+            fprintf('The number of observations was too large. Try again with %2.0d%% of the points.\n', uint8(100*percent));
+            numObservations = percent*numPointsCurrent;
+            continue;
+        else
+            error(err.message);
+        end
+    end
     
     % Optimized Calibration
     if param.optimizeJustRotation
